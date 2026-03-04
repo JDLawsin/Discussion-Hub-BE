@@ -20,6 +20,8 @@ class Thread extends Model
         'protocol_id',
         'title',
         'body',
+        'upvote_count',
+        'downvote_count',
     ];
 
     protected $casts = [

@@ -16,6 +16,8 @@ class ThreadResource extends JsonResource
     {
         return [
             'id'           => $this->id,
+            'protocolId'   => $this->protocol_id,
+            'protocol'     => ['title' => $this->protocol->title],
             'title'        => $this->title,
             'body'         => $this->body,
             'author'       => ['name' => $this->user->name],

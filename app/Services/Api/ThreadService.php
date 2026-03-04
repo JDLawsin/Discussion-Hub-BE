@@ -19,4 +19,10 @@ class ThreadService
 
         return $query->paginate($perPage);
     }
+
+    public function findOrFail(int $id): Thread
+    {
+    return Thread::with('user', 'tags', 'protocol')->withCount('comments')->findOrFail($id);
+    }
 }
+

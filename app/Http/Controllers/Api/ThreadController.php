@@ -19,4 +19,8 @@ class ThreadController extends Controller
 
         return ThreadResource::collection($threads);
     }
+
+    public function getThreadsById(Request $request, int $id){
+        return new ThreadResource($this->threadService->findOrFail($id));
+    }
 }
