@@ -3,7 +3,6 @@
 namespace App\Services\Api;
 
 use App\Models\Thread;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ThreadService 
 {
