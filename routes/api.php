@@ -17,6 +17,9 @@ Route::get('/reviews/{id}', [ReviewController::class, 'getReviewsByProtocolId'])
 
 // Protected routes here
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/protocols/{protocolId}/reviews/has-reviewed', [ReviewController::class, 'hasReviewed']);
+    
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me',      [AuthController::class, 'me']);
+    Route::post('/protocols/{id}/reviews', [ReviewController::class, 'createReview']);
 });
