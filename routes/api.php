@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProtocolController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ThreadController;
@@ -15,6 +16,7 @@ Route::get('/protocols/{id}', [ProtocolController::class, 'getProtocolById']);
 Route::get('/threads/{id}', [ThreadController::class, 'getThreadsByProtocolId']);
 Route::get('/reviews/{id}', [ReviewController::class, 'getReviewsByProtocolId']);
 Route::get('/threads/view/{id}', [ThreadController::class, 'getThreadsById']);
+Route::get('/threads/{threadId}/comments', [CommentController::class, 'getCommentsByThreadId']);
 
 // Protected routes here
 Route::middleware('auth:sanctum')->group(function () {

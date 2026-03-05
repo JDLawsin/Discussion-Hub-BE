@@ -18,6 +18,8 @@ class Comment extends Model
         'thread_id',
         'parent_id',
         'body',
+        'upvote_count',
+        'downvote_count',
     ];
 
     protected $casts = [
