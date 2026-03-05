@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CommentResource;
+use App\Models\Comment;
 use App\Services\Api\CommentService;
 use Illuminate\Http\Request;
 
@@ -18,5 +19,22 @@ class CommentController extends Controller
         $comments = $this->commentService->getByThreadId($threadId, (int) $perPage);
 
         return CommentResource::collection($comments);
+    }
+
+    public function create(Request $request, int $threadId)
+    {
+        $validated = $request->validate([
+            'comment'   => 'required|string',
+            'parent_id' => 'nullable|exists:comments,id',
+        ]);
+
+        Comment::create([
+            'user_id'   => $request->user()->id,
+            'thread_id' => $threadId,
+            'parent_id' => $validated['parent_id'] ?? null,
+            'body'      => $validated['comment'],
+        ]);
+
+        return response()->json(['success' => true]);  
     }
 }

@@ -30,4 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/protocols/{id}/reviews', [ReviewController::class, 'createReview']);
     Route::post('/threads/{votableId}/vote', [VoteController::class, 'vote'])->defaults('votableType', 'thread');
     Route::post('/comments/{votableId}/vote', [VoteController::class, 'vote'])->defaults('votableType', 'comment');
+    Route::post('/threads/{threadId}/comments', [CommentController::class, 'create']);
+
 });
