@@ -25,11 +25,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/threads/{votableId}/vote/user', [VoteController::class, 'getUserVoteType'])->defaults('votableType', 'thread');
     Route::get('/comments/{votableId}/vote/user', [VoteController::class, 'getUserVoteType'])->defaults('votableType', 'comment');
 
-
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/protocols/{id}/reviews', [ReviewController::class, 'createReview']);
     Route::post('/threads/{votableId}/vote', [VoteController::class, 'vote'])->defaults('votableType', 'thread');
     Route::post('/comments/{votableId}/vote', [VoteController::class, 'vote'])->defaults('votableType', 'comment');
     Route::post('/threads/{threadId}/comments', [CommentController::class, 'create']);
+    Route::post('/protocols', [ProtocolController::class, 'create']);
 
 });
