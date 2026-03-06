@@ -37,4 +37,17 @@ class CommentController extends Controller
 
         return response()->json(['success' => true]);  
     }
+
+    public function delete(Request $request, int $id)
+    {
+        $comment = Comment::findOrFail($id);
+
+        if ($comment->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $comment->delete();
+
+        return response()->json(['success' => true]);
+    }
 }
