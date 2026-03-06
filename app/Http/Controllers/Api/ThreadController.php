@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ThreadResource;
+use App\Models\Tag;
+use App\Models\Thread;
 use App\Services\Api\ThreadService;
 use Illuminate\Http\Request;
 
@@ -22,5 +24,33 @@ class ThreadController extends Controller
 
     public function getThreadsById(Request $request, int $id){
         return new ThreadResource($this->threadService->findOrFail($id));
+    }
+
+    public function create(Request $request)
+    {
+        $validated = $request->validate([
+            'title'      => 'required|string|max:255',
+            'body'       => 'required|string',
+            'protocolId' => 'required|exists:protocols,id',
+            'tags'       => 'nullable|array',
+            'tags.*'     => 'string|exists:tags,name',
+        ]);
+
+        $thread = Thread::create([
+            'user_id'     => $request->user()->id,
+            'protocol_id' => $validated['protocolId'],
+            'title'       => $validated['title'],
+            'body'        => $validated['body'],
+        ]);
+
+        if (!empty($validated['tags'])) {
+            $tagIds = Tag::whereIn('name', $validated['tags'])->pluck('id');
+            $thread->tags()->attach($tagIds);
+        }
+
+        return response()->json([
+            'success' => true,
+            'id'      => $thread->id,
+        ]);
     }
 }
