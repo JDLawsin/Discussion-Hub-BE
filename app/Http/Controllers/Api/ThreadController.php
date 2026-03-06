@@ -53,4 +53,17 @@ class ThreadController extends Controller
             'id'      => $thread->id,
         ]);
     }
+
+    public function delete(Request $request, int $id)
+    {
+        $thread = Thread::findOrFail($id);
+
+        if ($thread->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $thread->delete(); 
+
+        return response()->json(['success' => true]);
+    }
 }

@@ -43,4 +43,17 @@ class ProtocolController extends Controller
             'id'      => $protocol->id,
         ]);
     }
+
+    public function delete(Request $request, int $id)
+    {
+        $protocol = Protocol::findOrFail($id);
+
+        if ($protocol->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $protocol->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

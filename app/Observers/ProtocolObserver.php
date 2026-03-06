@@ -32,6 +32,7 @@ class ProtocolObserver
      */
     public function deleted(Protocol $protocol): void
     {
+        $protocol->threads->each(fn($thread) => $thread->delete());
         $this->typesense->deleteProtocol($protocol->id);
     }
 

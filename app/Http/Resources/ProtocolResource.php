@@ -18,7 +18,7 @@ class ProtocolResource extends JsonResource
             'id'             => $this->id,
             'title'          => $this->title,
             'content'        => $this->content,
-            'author'         => ['name' => $this->user->name],
+            'author'         => ['name' => $this->user->name, 'id' => $this->user->id],
             'tags'           => $this->tags->map(fn($tag) => ['name' => $tag->name]),
             'threadCount'    => $this->threads_count,
             'reviewCount'    => $this->review_count,

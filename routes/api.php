@@ -33,4 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/protocols', [ProtocolController::class, 'create']);
     Route::post('/threads', [ThreadController::class, 'create']);
 
+    Route::delete('/protocols/{id}', [ProtocolController::class, 'delete']);
+    Route::delete('/threads/{id}', [ThreadController::class, 'delete']);
+
 });

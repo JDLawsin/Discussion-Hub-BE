@@ -20,7 +20,7 @@ class ThreadResource extends JsonResource
             'protocol'     => ['title' => $this->protocol->title],
             'title'        => $this->title,
             'body'         => $this->body,
-            'author'       => ['name' => $this->user->name],
+            'author'         => ['name' => $this->user->name, 'id' => $this->user->id],
             'tags'         => $this->tags->map(fn($tag) => ['name' => $tag->name]),
             'upvoteCount'  => $this->upvote_count,
             'downvoteCount'=> $this->downvote_count,
