@@ -35,5 +35,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::delete('/protocols/{id}', [ProtocolController::class, 'delete']);
     Route::delete('/threads/{id}', [ThreadController::class, 'delete']);
-
+    Route::delete('/reviews/{id}', [ReviewController::class, 'delete']);
 });
