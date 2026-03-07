@@ -7,6 +7,7 @@ use App\Http\Resources\ThreadResource;
 use App\Models\Tag;
 use App\Models\Thread;
 use App\Services\Api\ThreadService;
+use App\Services\TypesenseService;
 use Illuminate\Http\Request;
 
 class ThreadController extends Controller
@@ -33,7 +34,7 @@ class ThreadController extends Controller
             'body'       => 'required|string',
             'protocolId' => 'required|exists:protocols,id',
             'tags'       => 'nullable|array',
-            'tags.*'     => 'string|exists:tags,name',
+            'tags.*'     => 'string',
         ]);
 
         $thread = Thread::create([
@@ -44,9 +45,15 @@ class ThreadController extends Controller
         ]);
 
         if (!empty($validated['tags'])) {
-            $tagIds = Tag::whereIn('name', $validated['tags'])->pluck('id');
+            $tagIds = collect($validated['tags'])
+                ->map(fn($name) => Tag::firstOrCreate(['name' => $name])->id);
+
             $thread->tags()->attach($tagIds);
         }
+
+        // TODO: Temporary fix, re index to record the proper tags data in TypeSense.
+        $thread->load(['user', 'tags']);
+        app(TypesenseService::class)->indexThread($thread);
 
         return response()->json([
             'success' => true,
