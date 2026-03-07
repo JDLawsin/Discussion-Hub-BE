@@ -1,4 +1,4 @@
-# DiscussionHub — Backend
+# Sanctum — Backend
 
 A Laravel REST API powering a community platform centered around structured wellness, healing, and instructional protocols. Users can post protocols, start threads, comment, vote, and leave reviews.
 
