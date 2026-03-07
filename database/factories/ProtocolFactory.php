@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Database\Factories\Providers\MeaningfulDataProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,10 +18,12 @@ class ProtocolFactory extends Factory
      */
     public function definition(): array
     {
+        $this->faker->addProvider(new MeaningfulDataProvider($this->faker));
+
         return [
             'user_id' => User::factory(),
-            'title'   => fake()->sentence(6),
-            'content' => fake()->paragraphs(3, true),
+            'title'   => $this->faker->protocolTitle(),
+            'content' => $this->faker->protocolContent(),
         ];
     }
 }
