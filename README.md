@@ -1,59 +1,220 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DiscussionHub — Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel REST API powering a community platform centered around structured wellness, healing, and instructional protocols. Users can post protocols, start threads, comment, vote, and leave reviews.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Laravel** — REST API
+- **Supabase/PostgreSQL** — Primary database
+- **Laravel Sanctum** — Token-based authentication
+- **Typesense** — Full-text search for protocols and threads
+- **Eloquent Observers** — Auto-sync Typesense on model changes
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 
+- Composer
+- PostgreSQL
+- Typesense (local or cloud)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Setup Instructions
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clone the repository
 
-### Premium Partners
+```bash
+git clone <repository-url>
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Install dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Configure environment
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open `.env` and fill in your database and Typesense credentials (see [Configuration](#configuration) below).
 
-## Security Vulnerabilities
+### 4. Run migrations and seed
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-## License
+This will:
+- Create all tables
+- Set up Typesense collections
+- Seed wellness-themed protocols, threads, comments, votes, and reviews
+- Create a test admin account (`admin@gmail.com` / `admin123`)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Start the server
+
+```bash
+php artisan serve
+```
+
+API is available at `http://localhost:8000/api`.
+
+---
+
+## Configuration
+
+### Database
+
+**Supabase (default):**
+Set `DB_URL` in your `.env` with your Supabase connection string:
+```env
+DB_URL=postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
+```
+
+**Local PostgreSQL:**
+Comment out `DB_URL` and use individual values instead:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=discussion_hub
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+```
+
+### Typesense
+#### Cloud 
+
+```env
+TYPESENSE_API_KEY=your_cloud_api_key
+TYPESENSE_HOST=xxx.a1.typesense.net
+TYPESENSE_PORT=443
+TYPESENSE_PROTOCOL=https
+```
+
+---
+
+## API Overview
+
+Protected routes require a `Bearer` token in the `Authorization` header obtained from `/api/login`.
+
+### Authentication
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/register` | Register a new user | Public |
+| POST | `/api/login` | Login and receive token | Public |
+| POST | `/api/logout` | Invalidate token | Protected |
+| GET | `/api/me` | Get authenticated user | Protected |
+
+### Protocols
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/protocols/{id}` | Get protocol by ID | Public |
+| POST | `/api/protocols` | Create a protocol | Protected |
+| DELETE | `/api/protocols/{id}` | Soft delete a protocol | Protected |
+
+### Threads
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/threads/{id}` | Get threads by protocol ID | Public |
+| GET | `/api/threads/view/{id}` | Get single thread by ID | Public |
+| POST | `/api/threads` | Create a thread | Protected |
+| DELETE | `/api/threads/{id}` | Soft delete a thread | Protected |
+
+**Query params for thread list:**
+- `threadSort=recent` (default) — sort by newest
+- `threadSort=upvoted` — sort by upvote count
+- `perPage=10` — results per page
+- `page=1` — page number
+
+### Comments
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/threads/{threadId}/comments` | Get comments for a thread | Public |
+| POST | `/api/threads/{threadId}/comments` | Post a comment | Protected |
+| DELETE | `/api/comments/{id}` | Soft delete a comment | Protected |
+
+**Request body for creating a comment:**
+```json
+{
+  "comment": "Your comment text",
+  "parent_id": null
+}
+```
+
+Pass `parent_id` to reply to an existing comment. Omit or pass `null` for top-level comments.
+
+### Reviews
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/reviews/{id}` | Get reviews by protocol ID | Public |
+| POST | `/api/protocols/{id}/reviews` | Submit a review | Protected |
+| DELETE | `/api/reviews/{id}` | Soft delete a review | Protected |
+| GET | `/api/protocols/{protocolId}/reviews/has-reviewed` | Check if authenticated user has reviewed | Protected |
+
+**Request body for creating a review:**
+```json
+{
+  "rating": 5,
+  "feedback": "This protocol changed my life."
+}
+```
+
+### Votes
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/threads/{votableId}/vote` | Vote on a thread | Protected |
+| POST | `/api/comments/{votableId}/vote` | Vote on a comment | Protected |
+| GET | `/api/threads/{votableId}/vote/user` | Get user's vote on a thread | Protected |
+| GET | `/api/comments/{votableId}/vote/user` | Get user's vote on a comment | Protected |
+
+**Request body for voting:**
+```json
+{
+  "type": "upvote"
+}
+```
+
+Voting the same type again toggles the vote off. Voting the opposite type switches it.
+---
+
+### Soft Deletes
+
+All major models use `SoftDeletes`. Deleting a Protocol cascades soft deletes to its Threads via `ProtocolObserver`. Typesense is kept in sync automatically through Eloquent Observers.
+
+---
+
+## Observers & Typesense Sync
+
+| Observer | Events Handled |
+|----------|---------------|
+| `ProtocolObserver` | created, updated → index; deleted → remove + cascade threads |
+| `ThreadObserver` | created, updated → index; deleted → remove |
+| `VoteObserver` | created, updated, deleted → recalculate vote counts |
+| `ReviewObserver` | created, updated, deleted → recalculate review counts and average rating |
+
+---
+
+## Test Account
+
+After seeding, a test account is available:
+
+```
+Email:    admin@gmail.com
+Password: admin123
+```
+
+---
