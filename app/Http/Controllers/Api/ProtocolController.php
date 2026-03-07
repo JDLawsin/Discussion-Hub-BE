@@ -7,6 +7,7 @@ use App\Http\Resources\ProtocolResource;
 use App\Models\Protocol;
 use App\Models\Tag;
 use App\Services\Api\ProtocolService;
+use App\Services\TypesenseService;
 use Illuminate\Http\Request;
 
 class ProtocolController extends Controller
@@ -24,7 +25,7 @@ class ProtocolController extends Controller
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
             'tags'    => 'nullable|array',
-            'tags.*'  => 'string|exists:tags,name',
+            'tags.*'  => 'string',
         ]);
 
         $protocol = Protocol::create([
@@ -34,9 +35,14 @@ class ProtocolController extends Controller
         ]);
 
         if (!empty($validated['tags'])) {
-            $tagIds = Tag::whereIn('name', $validated['tags'])->pluck('id');
+            $tagIds = collect($validated['tags'])
+            ->map(fn($name) => Tag::firstOrCreate(['name' => $name])->id);
             $protocol->tags()->attach($tagIds);
         }
+
+        // TODO: Temporary fix, re index to record the proper tags data in TypeSense.
+        $protocol->load(['user', 'tags']);
+        app(TypesenseService::class)->indexProtocol($protocol);
 
         return response()->json([
             'success' => true,
